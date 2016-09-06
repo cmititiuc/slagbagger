@@ -30,8 +30,8 @@ class Board {
     this.width = width;
     this.height = height;
 
-    this.drawBoard(width, height);
-    window.addEventListener("keydown", (e) => { this.checkKeyDown(e) }, false);
+    this.drawBoard();
+    window.addEventListener("keydown", e => this.checkKeyDown(e), false);
   }
 
   drawBoard() {
@@ -49,6 +49,14 @@ class Board {
     console.log('key pressed: ' + e.keyCode);
     // space bar
     if (e.keyCode == "32") { this.move(); }
+    // 38 up
+    else if (e.keyCode == "38") { this.move('up'); }
+    // 37 left
+    else if (e.keyCode == "37") { this.move('left'); }
+    // 39 right
+    else if (e.keyCode == "39") { this.move('right'); }
+    // 40 down
+    else if (e.keyCode == "40") { this.move('down'); }
   }
 
   addUnit(unit) {
@@ -56,12 +64,12 @@ class Board {
     this.units.push(unit);
   }
 
-  move() { for (let unit of this.units) { unit.move(); }}
+  move(direction) { for (let unit of this.units) { unit.move(direction); }}
 }
 
 class Player {
   constructor(x, y, board) {
-    this.position = {x: x, y: y};
+    this.position = { x: x, y: y };
     board.addUnit(this);
   }
 
@@ -70,25 +78,37 @@ class Player {
     $(selector).addClass('marked');
   }
 
-  move() {
+  move(direction) {
     var selector = 'td[data-x=' + this.position.x + '][data-y=' + this.position.y + ']';
     $(selector).removeClass('marked');
-    this.position.x += 1;
+
+    if (direction == 'up') {
+      this.position.y -= 1;
+    } else if (direction == 'down') {
+      this.position.y += 1;
+    } else if (direction == 'left') {
+      this.position.x -= 1;
+    } else  if (direction == 'right') {
+      this.position.x += 1;
+    }
+
     this.drawToBoard();
   }
 }
 
-function checkKeyDown(e, board) {
-  console.log('key pressed: ' + e.keyCode);
-  if (e.keyCode == "32") { // space bar
-    board.move();
-  }
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 $(document).ready(function() {
-  var board = new Board(100, 50);
-  var player1 = new Player(10, 10, board);
-  var player2 = new Player(10, 12, board);
+  var width = 100;
+  var height = 50;
+  var board = new Board(width, height);
+
+  var rand_x = getRandomInt(0, width - 1);
+  var rand_y = getRandomInt(0, height - 1);
+  var player1 = new Player(rand_x, rand_y, board);
+  // var player2 = new Player(10, 12, board);
 });
 </script>
 </head>
