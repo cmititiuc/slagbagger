@@ -1,0 +1,95 @@
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+.marked {
+  background-color: brown;
+}
+
+#board {
+  border-spacing: 0;
+}
+
+#board tr td {
+  width: 10px;
+  height: 10px;
+  border: 1px solid #ddd;
+  padding: 0;
+}
+</style>
+<script
+  src="https://code.jquery.com/jquery-3.1.0.slim.min.js"
+  integrity="sha256-cRpWjoSOw5KcyIOaZNo4i6fZ9tKPhYYb6i5T9RSVJG8="
+  crossorigin="anonymous">
+</script>
+<script>
+
+class Board {
+  constructor(width, height) {
+    this.units = [];
+    this.width = width;
+    this.height = height;
+
+    this.drawBoard(width, height);
+    window.addEventListener("keydown", (e) => { this.checkKeyDown(e) }, false);
+  }
+
+  drawBoard() {
+    $('body').append('<table id="board"></table>')
+    for (var y = 0; y < this.height; y++) {
+      var tds = '';
+      for (var x = 0; x < this.width; x++) {
+        tds += '<td data-x="' + x + '" data-y="' + y + '"></td>'
+      }
+      $('#board').append('<tr>' + tds + '</tr>');
+    }
+  }
+
+  checkKeyDown(e) {
+    console.log('key pressed: ' + e.keyCode);
+    // space bar
+    if (e.keyCode == "32") { this.move(); }
+  }
+
+  addUnit(unit) {
+    unit.drawToBoard();
+    this.units.push(unit);
+  }
+
+  move() { for (let unit of this.units) { unit.move(); }}
+}
+
+class Player {
+  constructor(x, y, board) {
+    this.position = {x: x, y: y};
+    board.addUnit(this);
+  }
+
+  drawToBoard() {
+    var selector = 'td[data-x=' + this.position.x + '][data-y=' + this.position.y + ']';
+    $(selector).addClass('marked');
+  }
+
+  move() {
+    var selector = 'td[data-x=' + this.position.x + '][data-y=' + this.position.y + ']';
+    $(selector).removeClass('marked');
+    this.position.x += 1;
+    this.drawToBoard();
+  }
+}
+
+function checkKeyDown(e, board) {
+  console.log('key pressed: ' + e.keyCode);
+  if (e.keyCode == "32") { // space bar
+    board.move();
+  }
+}
+
+$(document).ready(function() {
+  var board = new Board(100, 50);
+  var player1 = new Player(10, 10, board);
+  var player2 = new Player(10, 12, board);
+});
+</script>
+</head>
+</html>
